@@ -1,0 +1,12 @@
+syntax = "proto2";
+
+package order;
+
+option go_package = "github.com/RushilHKC/grpcSimulator/shared/gen/order:orderpb";
+
+
+
+
+
+
+
