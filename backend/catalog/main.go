@@ -2,8 +2,12 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	handler "github.com/RushilHKC/grpcSimulator/backend/catalog/internal"
@@ -30,22 +34,45 @@ func createServer() *http.Server {
 	}
 }
 
-func runServer(server *http.Server) error {
+func runServer(ctx context.Context, server *http.Server, shutdownTimeOut time.Duration) error {
 
 	serverErr := make(chan error, 1)
 
-	// go func() {
-	if err := server.ListenAndServe(); err != nil {
-		serverErr <- err
-	}
-	// }()
+	go func() {
+		if err := server.ListenAndServe(); err != nil {
+			serverErr <- err
+		}
+	}()
+
+	stop := make(chan os.Signal)
+
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 
 	select {
 	case err := <-serverErr:
 		return err
-	default:
-		return nil
+	case <-ctx.Done():
+		log.Println("Context cancelled")
+	case <-stop:
+		log.Println("Shutdown signal received")
 	}
+
+	shutDownContext, cancel := context.WithTimeout(
+		context.Background(),
+		shutdownTimeOut,
+	)
+
+	defer cancel()
+
+	if shutdownErr := server.Shutdown(shutDownContext); shutdownErr != nil {
+		if CloseErr := server.Close(); CloseErr != nil {
+			return errors.Join(CloseErr, shutdownErr)
+		}
+
+		return shutdownErr
+	}
+
+	return nil
 
 }
 
@@ -54,10 +81,12 @@ func main() {
 	server := createServer()
 	ctx := context.Background()
 
-	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	if err := runServer(server); err != nil {
+	shutDownTimeOut := time.Second * 10
+
+	if err := runServer(ctx, server, shutDownTimeOut); err != nil {
 		log.Fatalf("Error starting Server %v", err)
 	}
 

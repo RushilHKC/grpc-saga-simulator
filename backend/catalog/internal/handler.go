@@ -1,8 +1,8 @@
 package internal
 
 import (
+	"encoding/json"
 	"fmt"
-	"json"
 	"net/http"
 
 	db "github.com/RushilHKC/grpcSimulator/DB"
@@ -11,6 +11,8 @@ import (
 func GetProducts(w http.ResponseWriter, r *http.Request) {
 	products := db.GetProducts()
 	json.NewEncoder(w).Encode(products)
+
+	
 }
 
 func GetProduct(w http.ResponseWriter, r *http.Request) {
