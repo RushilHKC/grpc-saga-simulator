@@ -1,0 +1,35 @@
+backend/catalog/
+
+go.mod
+Catalog service's Go module and dependencies.
+
+
+cmd/catalog/main.go
+Application entry point: load config, connect to DB, register and start the gRPC server.
+
+
+internal/
+ config/
+Read environment variables and configuration.
+
+ db/
+Database connection and initialization.
+
+ repository/
+SQL queries and database CRUD operations.
+
+ service/
+Catalog business logic and validation.
+
+ handler/
+gRPC method implementations; receives requests and returns responses.
+
+
+
+
+proto/ or a shared proto directory
+Catalog service's .proto definitions, depending on your repository layout.
+
+
+gen/ or a shared generated-code directory
+Generated Go protobuf message types and gRPC client/server interfaces.
