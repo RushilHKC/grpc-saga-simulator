@@ -86,7 +86,6 @@ func main() {
 	}
 
 	con := config.Load_Db_Config()
-	fmt.Println(con.Port)
 
 	db, err := catalog_db.New_db_connection(con.Port, con.User, con.Password, con.Db_name)
 

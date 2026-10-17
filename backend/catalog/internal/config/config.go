@@ -26,8 +26,8 @@ func LoadServerConfig() *Server_config {
 func Load_Db_Config() *DB_config {
 	return &DB_config{
 		Port:     os.Getenv("port"),
-		User:     "Harshwardhan",
-		Password: "admin",
-		Db_name:  "catalog",
+		User:     os.Getenv("user"),
+		Password: os.Getenv("password"),
+		Db_name:  os.Getenv("db_name"),
 	}
 }
