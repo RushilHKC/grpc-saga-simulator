@@ -1,7 +1,7 @@
 package config
 
 type DB_config struct {
-	Port         int
+	Port         string
 	User         string
 	Password     string
 	Db_name      string
@@ -9,9 +9,19 @@ type DB_config struct {
 	MaxOpenConn  int
 }
 
+type Server_config struct {
+	Addr string
+}
+
+func LoadServerConfig() *Server_config {
+	return &Server_config{
+		Addr: ":3000",
+	}
+}
+
 func Load_Db_Config() *DB_config {
 	return &DB_config{
-		Port:     5432,
+		Port:     "5432",
 		User:     "Harshwardhan",
 		Password: "admin",
 		Db_name:  "catalog",

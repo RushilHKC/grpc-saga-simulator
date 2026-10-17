@@ -33,3 +33,13 @@ Catalog service's .proto definitions, depending on your repository layout.
 
 gen/ or a shared generated-code directory
 Generated Go protobuf message types and gRPC client/server interfaces.
+
+
+=====================================================================================
+
+// Endpoint	Purpose
+// GET /products	List products
+// GET /products/{id}	Fetch one product
+// GET /products?category=electronics	Filter by category
+// GET /products?limit=20&offset=0	Paginate results
+// GET /products?sort=price_asc	Sort by price

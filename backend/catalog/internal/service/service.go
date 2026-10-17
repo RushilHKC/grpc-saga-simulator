@@ -1,7 +1,8 @@
 package service
 
 import (
-	db "github.com/RushilHKC/grpcSimulator/backend/catalog/internal/Repository"
+	p "github.com/RushilHKC/grpcSimulator/backend/catalog/internal/model"
+	"github.com/RushilHKC/grpcSimulator/backend/catalog/internal/repository"
 )
 
 type ProductService struct {
@@ -10,9 +11,17 @@ type ProductService struct {
 	// AddProduct(p Product)
 	// RemoveProduct(id int)
 	// UpdateProduct(id int)
-	Repo *db.PostGressProductRepository
+	Repo repository.ProductRepository
 }
 
-func NewProductService(r *db.PostGressProductRepository) *ProductService {
+func NewProductService(r repository.ProductRepository) *ProductService {
 	return &ProductService{Repo: r}
+}
+
+func (srv *ProductService) GetProduct(id int) (*p.Product, error) {
+	return srv.Repo.GetProduct(id)
+}
+
+func (srv *ProductService) GetProducts() ([]p.Product, error) {
+	return srv.Repo.GetProducts()
 }

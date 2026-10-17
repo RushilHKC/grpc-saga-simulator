@@ -11,31 +11,23 @@ import (
 	"syscall"
 	"time"
 
-	handler "github.com/RushilHKC/grpcSimulator/backend/catalog/internal/handler"
-	"github.com/joho/godotenv"
+	catalog_db "github.com/RushilHKC/grpcSimulator/backend/catalog/internal/DB"
+	"github.com/RushilHKC/grpcSimulator/backend/catalog/internal/handler"
+
+	"github.com/RushilHKC/grpcSimulator/backend/catalog/internal/config"
+	"github.com/RushilHKC/grpcSimulator/backend/catalog/internal/repository"
+	"github.com/RushilHKC/grpcSimulator/backend/catalog/internal/service"
 )
 
-// Endpoint	Purpose
-// GET /products	List products
-// GET /products/{id}	Fetch one product
-// GET /products?category=electronics	Filter by category
-// GET /products?limit=20&offset=0	Paginate results
-// GET /products?sort=price_asc	Sort by price
-
-type config struct {
-	addr string
-}
-
-func createServer(cfg config) *http.Server {
+func createServer(cfg *config.Server_config, h handler.Handler) *http.Server {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /", handler.GetProducts)
-	mux.HandleFunc("GET /{id}", handler.GetProduct)
-	// mux.HandleFunc("GET /{category}", handler.FilterByCategory)
+	mux.HandleFunc("GET /", h.GetProducts)
+	mux.HandleFunc("GET /{id}", h.GetProduct)
 
 	return &http.Server{
-		Addr:    cfg.addr,
+		Addr:    cfg.Addr,
 		Handler: mux,
 	}
 }
@@ -87,25 +79,28 @@ func runServer(server *http.Server, shutdownTimeOut time.Duration) error {
 
 func main() {
 
-	addr, ok := os.LookupEnv("PORT")
-	if !ok {
-		log.Fatal("Missing port in env")
-	}
+	con := config.Load_Db_Config()
 
-	cfg := config{
-		addr: addr,
-	}
+	db, err := catalog_db.New_db_connection(con.Port, con.User, con.Password, con.Db_name)
 
-	server := createServer(cfg)
-	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading env file")
+		log.Fatal("Error connecting DB")
 	}
 
-	// ctx := context.Background()
+	productsRepo := repository.NewProductsRepository(db)
+	productService := service.NewProductService(productsRepo)
 
-	// ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	// defer cancel()
+	handler := handler.Handler{Srv: productService}
+
+	serverConfig := config.LoadServerConfig()
+
+	server := createServer(serverConfig, handler)
+
+	// err = godotenv.Load()
+
+	// if err != nil {
+	// 	log.Fatal("Error loading env file")
+	// }
 
 	shutDownTimeOut := time.Second * 10
 
