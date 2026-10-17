@@ -11,7 +11,7 @@ import (
 )
 
 func New_db_connection(port string, user, password, db_name string) (*sql.DB, error) {
-	connection_str := fmt.Sprintf("port=%s user=%s password=%s dbname=%s sslmode=disable", port, user, password, db_name)
+	connection_str := fmt.Sprintf("host=localhost port=%s user=%s password=%s dbname=%s sslmode=disable", port, user, password, db_name)
 
 	db, err := sql.Open("postgres", connection_str)
 
@@ -20,11 +20,11 @@ func New_db_connection(port string, user, password, db_name string) (*sql.DB, er
 		return nil, err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5000)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*5)
 	defer cancel()
 
 	if err := db.PingContext(ctx); err != nil {
-		log.Fatal("Error db connect timeOut", err)
+		log.Fatal("Error db connect timeOut: ", err)
 		return nil, err
 	}
 

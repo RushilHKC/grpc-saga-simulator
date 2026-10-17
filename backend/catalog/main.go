@@ -11,15 +11,15 @@ import (
 	"syscall"
 	"time"
 
-	catalog_db "github.com/RushilHKC/grpcSimulator/backend/catalog/internal/DB"
-	"github.com/RushilHKC/grpcSimulator/backend/catalog/internal/handler"
-
+	"github.com/RushilHKC/grpcSimulator/backend/catalog/internal/catalog_db"
 	"github.com/RushilHKC/grpcSimulator/backend/catalog/internal/config"
+	"github.com/RushilHKC/grpcSimulator/backend/catalog/internal/handler"
 	"github.com/RushilHKC/grpcSimulator/backend/catalog/internal/repository"
 	"github.com/RushilHKC/grpcSimulator/backend/catalog/internal/service"
+	"github.com/joho/godotenv"
 )
 
-func createServer(cfg *config.Server_config, h handler.Handler) *http.Server {
+func createServer(cfg *config.Server_config, h *handler.Handler) *http.Server {
 
 	mux := http.NewServeMux()
 
@@ -79,7 +79,14 @@ func runServer(server *http.Server, shutdownTimeOut time.Duration) error {
 
 func main() {
 
+	err := godotenv.Load()
+
+	if err != nil {
+		log.Fatal("Error loading env file", err)
+	}
+
 	con := config.Load_Db_Config()
+	fmt.Println(con.Port)
 
 	db, err := catalog_db.New_db_connection(con.Port, con.User, con.Password, con.Db_name)
 
@@ -90,17 +97,11 @@ func main() {
 	productsRepo := repository.NewProductsRepository(db)
 	productService := service.NewProductService(productsRepo)
 
-	handler := handler.Handler{Srv: productService}
+	handler := handler.NewHandler(productService)
 
 	serverConfig := config.LoadServerConfig()
 
 	server := createServer(serverConfig, handler)
-
-	// err = godotenv.Load()
-
-	// if err != nil {
-	// 	log.Fatal("Error loading env file")
-	// }
 
 	shutDownTimeOut := time.Second * 10
 

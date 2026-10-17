@@ -13,6 +13,10 @@ type Handler struct {
 	Srv *service.ProductService
 }
 
+func NewHandler(srv *service.ProductService) *Handler {
+	return &Handler{Srv: srv}
+}
+
 func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	products, err := h.Srv.GetProducts()
 

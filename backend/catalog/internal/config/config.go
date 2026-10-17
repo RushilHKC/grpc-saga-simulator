@@ -1,5 +1,9 @@
 package config
 
+import (
+	"os"
+)
+
 type DB_config struct {
 	Port         string
 	User         string
@@ -15,13 +19,13 @@ type Server_config struct {
 
 func LoadServerConfig() *Server_config {
 	return &Server_config{
-		Addr: ":3000",
+		Addr: os.Getenv("ADDR"),
 	}
 }
 
 func Load_Db_Config() *DB_config {
 	return &DB_config{
-		Port:     "5432",
+		Port:     os.Getenv("port"),
 		User:     "Harshwardhan",
 		Password: "admin",
 		Db_name:  "catalog",
