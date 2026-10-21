@@ -1,4 +1,4 @@
-package handler
+package handlerSVC
 
 import (
 	"encoding/json"
@@ -9,16 +9,25 @@ import (
 	"github.com/RushilHKC/grpcSimulator/backend/catalog/internal/service"
 )
 
-type Handler struct {
-	Srv *service.ProductService
+type Handler interface {
+	GetProducts(w http.ResponseWriter, r *http.Request)
+	GetProduct(w http.ResponseWriter, r *http.Request)
 }
 
-func NewHandler(srv *service.ProductService) *Handler {
-	return &Handler{Srv: srv}
+type ProductHandler struct {
+	Srv service.ProductSVC
 }
 
-func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
-	products, err := h.Srv.GetProducts()
+var _ Handler = (*ProductHandler)(nil)
+
+func NewHandler(srv service.ProductSVC) *ProductHandler {
+	return &ProductHandler{Srv: srv}
+}
+
+func (h *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	products, err := h.Srv.GetProducts(ctx)
 
 	if err != nil {
 		log.Printf("Error getting Products: %v", err)
@@ -27,15 +36,19 @@ func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(products)
 }
 
-func (h *Handler) GetProduct(w http.ResponseWriter, r *http.Request) {
+func (h *ProductHandler) GetProduct(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	ID, err := strconv.Atoi(id)
+
+	Id, err := strconv.Atoi(id)
 
 	if err != nil {
-		json.NewEncoder(w).Encode(err)
+		http.Error(w, "Invalid Product ID", http.StatusBadRequest)
+		return
 	}
 
-	product, err := h.Srv.GetProduct(ID)
+	ctx := r.Context()
+	product, err := h.Srv.GetProduct(ctx, Id)
 
 	json.NewEncoder(w).Encode(product)
+
 }

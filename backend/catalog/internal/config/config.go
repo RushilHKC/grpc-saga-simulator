@@ -1,7 +1,7 @@
 package config
 
 import (
-	"os"
+	"github.com/RushilHKC/grpcSimulator/backend/catalog/internal/env"
 )
 
 type DB_config struct {
@@ -19,15 +19,15 @@ type Server_config struct {
 
 func LoadServerConfig() *Server_config {
 	return &Server_config{
-		Addr: os.Getenv("ADDR"),
+		Addr: env.GetString("ADDR"),
 	}
 }
 
 func Load_Db_Config() *DB_config {
 	return &DB_config{
-		Port:     os.Getenv("port"),
-		User:     os.Getenv("user"),
-		Password: os.Getenv("password"),
-		Db_name:  os.Getenv("db_name"),
+		Port:     env.GetString("port"),
+		User:     env.GetString("user"),
+		Password: env.GetString("password"),
+		Db_name:  env.GetString("db_name"),
 	}
 }

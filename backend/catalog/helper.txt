@@ -43,3 +43,23 @@ Generated Go protobuf message types and gRPC client/server interfaces.
 // GET /products?category=electronics	Filter by category
 // GET /products?limit=20&offset=0	Paginate results
 // GET /products?sort=price_asc	Sort by price
+
+===============================================================
+
+# Variables
+DB_URL=postgres://Harshwardhan:admin@localhost:5432/catalog?sslmode=disable
+MIGRATE_PATH=./internal/migrations
+
+.PHONY: migrate-up migrate-down migrate-create
+
+# Run all up migrations
+migrate-up:
+	migrate -path=$(MIGRATE_PATH) -database "$(DB_URL)" up
+
+# Roll back the last migration
+migrate-down:
+	migrate -path=$(MIGRATE_PATH) -database "$(DB_URL)" down 1
+
+# Create a new migration file (Usage: make migrate-create name=create_users_table)
+migrate-create:
+	migrate create -ext=sql -dir=$(MIGRATE_PATH) -seq $(name)

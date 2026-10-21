@@ -7,6 +7,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/RushilHKC/grpcSimulator/backend/catalog/internal/env"
 	_ "github.com/lib/pq"
 )
 
@@ -16,11 +17,12 @@ func New_db_connection(port string, user, password, db_name string) (*sql.DB, er
 	db, err := sql.Open("postgres", connection_str)
 
 	if err != nil {
-		log.Fatal("Error connecting DB:", err)
+		log.Fatal("Error connecting DB: ", err)
 		return nil, err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*5)
+	db_time_out := env.GetInt("database_time_out")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(db_time_out)*time.Second)
 	defer cancel()
 
 	if err := db.PingContext(ctx); err != nil {

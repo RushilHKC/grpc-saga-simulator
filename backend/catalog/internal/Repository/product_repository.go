@@ -1,15 +1,17 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
+	"errors"
 	"log"
 
 	"github.com/RushilHKC/grpcSimulator/backend/catalog/internal/model"
 )
 
 type ProductRepository interface {
-	GetProduct(id int) (*model.Product, error)
-	GetProducts() ([]model.Product, error)
+	GetProduct(ctx context.Context, id int) (*model.Product, error)
+	GetProducts(ctx context.Context) ([]model.Product, error)
 }
 
 var _ ProductRepository = (*postgresProductRepository)(nil)
@@ -22,17 +24,17 @@ func NewProductsRepository(db *sql.DB) *postgresProductRepository {
 	return &postgresProductRepository{db: db}
 }
 
-func (r *postgresProductRepository) GetProduct(id int) (*model.Product, error) {
+func (r *postgresProductRepository) GetProduct(ctx context.Context, id int) (*model.Product, error) {
 
 	var product model.Product
 
-	query := "SELECT * FROM products where id = $1"
-	err := r.db.QueryRow(query, id).Scan(product.ID, product.Currency, product.Description, product.Name, product.Price)
+	query := "SELECT id,name,description,price,currency FROM products where id=$1"
+	err := r.db.QueryRowContext(ctx, query, id).Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.Currency)
 
 	if err != nil {
 
-		if err == sql.ErrNoRows {
-			log.Printf("Error product not found")
+		if errors.Is(err, sql.ErrNoRows) {
+			log.Printf("Error product not found: %s", err)
 			return nil, err
 		}
 
@@ -43,19 +45,19 @@ func (r *postgresProductRepository) GetProduct(id int) (*model.Product, error) {
 	return &product, nil
 }
 
-func (r *postgresProductRepository) GetProducts() ([]model.Product, error) {
+func (r *postgresProductRepository) GetProducts(ctx context.Context) ([]model.Product, error) {
 	products := []model.Product{}
 
-	query := "SELECT * FROM products"
-	rows, err := r.db.Query(query)
+	query := "SELECT id,name,description,price,currency FROM products"
+	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		var product model.Product
-		if err := rows.Scan(&product.Currency, &product.Description, &product.ID, &product.Name, &product.Price); err != nil {
+		product := model.Product{}
+		if err := rows.Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.Currency); err != nil {
 			return nil, err
 		}
 
