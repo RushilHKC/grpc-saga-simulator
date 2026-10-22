@@ -22,6 +22,15 @@ func NewProductService(r repository.ProductRepository) *ProductService {
 	return &ProductService{repo: r}
 }
 
+func (srv *ProductService) GetOrderDetails(ctx context.Context, id int) (*model.OrderDetails, error) {
+	time_out := env.GetInt("database_time_out")
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(time_out)*time.Second)
+
+	defer cancel()
+
+	return srv.repo.GetOrderDetails(ctx, id)
+}
+
 func (srv *ProductService) GetProduct(ctx context.Context, id int) (*model.Product, error) {
 
 	time_out := env.GetInt("database_time_out")

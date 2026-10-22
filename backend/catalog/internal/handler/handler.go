@@ -24,6 +24,18 @@ func NewHandler(srv service.ProductSVC) *ProductHandler {
 	return &ProductHandler{Srv: srv}
 }
 
+func (h *ProductHandler) GetOrderDetails(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	details, err := h.Srv.GetOrderDetails(ctx, Id)
+
+	if err != nil {
+		log.Printf("Product not available: ", err)
+	}
+
+	json.NewEncoder(w).Encode(details)
+}
+
 func (h *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

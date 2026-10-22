@@ -12,6 +12,7 @@ import (
 type ProductRepository interface {
 	GetProduct(ctx context.Context, id int) (*model.Product, error)
 	GetProducts(ctx context.Context) ([]model.Product, error)
+	GetOrderDetails(ctx context.Context, id int) (*model.OrderDetails, error)
 }
 
 var _ ProductRepository = (*postgresProductRepository)(nil)
@@ -24,12 +25,13 @@ func NewProductsRepository(db *sql.DB) *postgresProductRepository {
 	return &postgresProductRepository{db: db}
 }
 
+const getProductQuery = "SELECT id,name,description,price,currency FROM products WHERE id=$1"
+
 func (r *postgresProductRepository) GetProduct(ctx context.Context, id int) (*model.Product, error) {
 
 	var product model.Product
 
-	query := "SELECT id,name,description,price,currency FROM products where id=$1"
-	err := r.db.QueryRowContext(ctx, query, id).Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.Currency)
+	err := r.db.QueryRowContext(ctx, getProductQuery, id).Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.Currency)
 
 	if err != nil {
 
@@ -45,11 +47,12 @@ func (r *postgresProductRepository) GetProduct(ctx context.Context, id int) (*mo
 	return &product, nil
 }
 
+const getProductsQuery = "SELECT id,name,description,price,currency FROM products"
+
 func (r *postgresProductRepository) GetProducts(ctx context.Context) ([]model.Product, error) {
 	products := []model.Product{}
 
-	query := "SELECT id,name,description,price,currency FROM products"
-	rows, err := r.db.QueryContext(ctx, query)
+	rows, err := r.db.QueryContext(ctx, getProductsQuery)
 	if err != nil {
 		return nil, err
 	}
@@ -70,4 +73,20 @@ func (r *postgresProductRepository) GetProducts(ctx context.Context) ([]model.Pr
 
 	return products, nil
 
+}
+
+const orderDetailsQuery = "SELECT id,price,currency FROM products WHERE id=$1"
+
+func (r *postgresProductRepository) GetOrderDetails(ctx context.Context, id int) (*model.OrderDetails, error) {
+
+	var details model.OrderDetails
+
+	err := r.db.QueryRowContext(ctx, orderDetailsQuery, id).Scan(&details.ID, &details.Price, &details.Currency)
+
+	if err != nil {
+		log.Printf("Error product not found: %s", err)
+		return nil, err
+	}
+
+	return &details, nil
 }
