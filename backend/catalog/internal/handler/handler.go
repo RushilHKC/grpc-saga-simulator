@@ -27,6 +27,15 @@ func NewHandler(srv service.ProductSVC) *ProductHandler {
 func (h *ProductHandler) GetOrderDetails(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
+	//This part needs to be fixed as Id is not read correctly 
+	var p []byte
+
+	Id, err := r.Body.Read(p)
+
+	if err != nil {
+		json.NewEncoder(w).Encode(err)
+	}
+
 	details, err := h.Srv.GetOrderDetails(ctx, Id)
 
 	if err != nil {

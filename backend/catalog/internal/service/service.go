@@ -12,6 +12,7 @@ import (
 type ProductSVC interface {
 	GetProduct(ctx context.Context, id int) (*model.Product, error)
 	GetProducts(ctx context.Context) ([]model.Product, error)
+	GetOrderDetails(ctx context.Context, id int) (*model.OrderDetails, error)
 }
 
 type ProductService struct {
