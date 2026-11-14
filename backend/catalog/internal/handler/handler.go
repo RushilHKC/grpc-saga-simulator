@@ -12,6 +12,7 @@ import (
 type Handler interface {
 	GetProducts(w http.ResponseWriter, r *http.Request)
 	GetProduct(w http.ResponseWriter, r *http.Request)
+	Welcome(w http.ResponseWriter, r *http.Request)
 }
 
 type ProductHandler struct {
@@ -27,7 +28,7 @@ func NewHandler(srv service.ProductSVC) *ProductHandler {
 func (h *ProductHandler) GetOrderDetails(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	//This part needs to be fixed as Id is not read correctly 
+	//This part needs to be fixed as Id is not read correctly
 	var p []byte
 
 	Id, err := r.Body.Read(p)
@@ -72,4 +73,10 @@ func (h *ProductHandler) GetProduct(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(product)
 
+}
+
+func (h *ProductHandler) Welcome(w http.ResponseWriter, r *http.Request) {
+	msg := "Welcome"
+
+	json.NewEncoder(w).Encode(msg)
 }
