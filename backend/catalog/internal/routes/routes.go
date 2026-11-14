@@ -6,12 +6,10 @@ import (
 	handlerSVC "github.com/RushilHKC/grpcSimulator/backend/catalog/internal/handler"
 )
 
-func NewMux(handler handlerSVC.Handler) http.Handler {
+func Register(mux *http.ServeMux, handler handlerSVC.Handler) {
 
-	mux := http.NewServeMux()
-
+	mux.HandleFunc("GET /", handler.Welcome)
 	mux.HandleFunc("GET  /products", handler.GetProducts)
 	mux.HandleFunc("GET /product/{id}", handler.GetProduct)
 
-	return mux
 }

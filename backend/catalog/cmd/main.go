@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/RushilHKC/grpcSimulator/backend/catalog/internal/catalog_db"
@@ -39,8 +40,9 @@ func main() {
 
 	serverConfig := config.LoadServerConfig()
 	handler := handlerSVC.NewHandler(productService)
+	mux := http.NewServeMux()
 
-	mux := routes.NewMux(handler)
+	routes.Register(mux, handler)
 	server := shared.CreateServer(serverConfig.Addr, mux)
 
 	shut_down_time := env.GetInt("shut_down_time_out")

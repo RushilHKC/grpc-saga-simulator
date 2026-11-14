@@ -1,4 +1,4 @@
-package shutdown
+package shared
 
 import (
 	"context"
@@ -11,15 +11,15 @@ import (
 	"time"
 )
 
-func createServer(cfg *cfg.Server_config, handler handlerSVC.Handler, mux *http.ServeMux) *http.Server {
+func CreateServer(addr string, mux http.Handler) *http.Server {
 
 	return &http.Server{
-		Addr:    cfg.Addr,
+		Addr:    addr,
 		Handler: mux,
 	}
 }
 
-func runServer(server *http.Server, shutdownTimeOut time.Duration) error {
+func RunServer(server *http.Server, shutdownTimeOut time.Duration) error {
 
 	serverErr := make(chan error, 1)
 
