@@ -4,11 +4,29 @@ package orderService;
 
 service OrderService{
     rpc CreateOrder(OrderRequest) returns (OrderResponse);
+    // rpc initOrchestrator(OrchestratorRequest) returns (OrchestratorResponse);    
+
 }
 
 message OrderRequest{
     string order_id = 1;
     string product_id = 2;  
+} 
+
+message sessionUrlRequest{
+    
+}
+
+message sessionUrlResponse{
+    string URL=1;
+}
+
+message OrchestratorRequest{
+    string orch_id = 1;
+}
+
+message OrchestratorResponse{
+    string orch_id = 1;
 }
 
 message OrderResponse{
