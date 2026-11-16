@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/RushilHKC/grpcSimulator/backend/Order/internal/config"
+	"github.com/RushilHKC/grpcSimulator/backend/Order/internal/env"
 	shared "github.com/RushilHKC/grpcSimulator/backend/shared/shutdown"
 	"github.com/joho/godotenv"
 )
