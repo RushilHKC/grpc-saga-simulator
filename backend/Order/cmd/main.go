@@ -25,6 +25,9 @@ func main() {
 
 	db, err := database.New_db_connection(con.Port, con.UserName, con.Password, con.DbName, con.DbTimeOut)
 
+	orderRepo := repository.NewOrderRepository(db)
+	orderService := service.NewOrderService(orderRepo)
+
 	if err != nil {
 		log.Fatal("Error Connecting DB:", err)
 	} else {
