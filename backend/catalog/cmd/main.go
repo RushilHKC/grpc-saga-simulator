@@ -49,7 +49,7 @@ func main() {
 	shutDownTimeOut := time.Duration(shut_down_time) * time.Second
 
 	if err := shared.RunServer(server, shutDownTimeOut); err != nil {
-		log.Fatalf("Error starting Server %v", err)
+		log.Fatalf("Error starting Server:  %v", err)
 	}
 
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/RushilHKC/grpcSimulator/backend/Order/internal/config"
 	"github.com/RushilHKC/grpcSimulator/backend/Order/internal/env"
 	shared "github.com/RushilHKC/grpcSimulator/backend/shared/shutdown"
+	database "github.com/RushilHKC/grpcSimulator/shared/gen/Db"
 	"github.com/joho/godotenv"
 )
 
@@ -20,9 +21,9 @@ func main() {
 		log.Fatal("Error loading env file: ", err)
 	}
 
-	con := config.loadDbConfig()
+	con := config.LoadDbConfig()
 
-	db, err := Db.NewDbConnection(con.Port, con.user, con.Password, con.DbName)
+	db, err := database.New_db_connection(con.Port, con.UserName, con.Password, con.DbName, con.DbTimeOut)
 
 	if err != nil {
 		log.Fatal("Error Connecting DB:", err)

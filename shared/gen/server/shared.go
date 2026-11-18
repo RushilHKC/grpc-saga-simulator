@@ -11,7 +11,12 @@ import (
 	"time"
 )
 
-func CreateServer(addr string, mux http.Handler) *http.Server {
+func createServer(addr string, mux http.Handler) *http.Server {
+
+	// mux := http.NewServeMux()
+
+	// mux.HandleFunc("GET /products", handler.GetProducts)
+	// mux.HandleFunc("GET /product/{id}", handler.GetProduct)
 
 	return &http.Server{
 		Addr:    addr,
@@ -19,7 +24,7 @@ func CreateServer(addr string, mux http.Handler) *http.Server {
 	}
 }
 
-func RunServer(server *http.Server, shutdownTimeOut time.Duration) error {
+func runServer(server *http.Server, shutdownTimeOut time.Duration) error {
 
 	serverErr := make(chan error, 1)
 
@@ -40,24 +45,20 @@ func RunServer(server *http.Server, shutdownTimeOut time.Duration) error {
 	case err := <-serverErr:
 		fmt.Println("Error starting server: ", err)
 		return err
+	// case <-ctx.Done():
+	// 	fmt.Println("Context cancelled")
 	case <-stop:
 		fmt.Println("Shutdown signal received")
 	}
 
-	return shutdownServer(shutdownTimeOut, server)
-
-}
-
-func shutdownServer(shutdownTimeOut time.Duration, server *http.Server) error {
-
-	shutdownContext, cancel := context.WithTimeout(
+	shutDownContext, cancel := context.WithTimeout(
 		context.Background(),
 		shutdownTimeOut,
 	)
 
 	defer cancel()
 
-	if shutdownErr := server.Shutdown(shutdownContext); shutdownErr != nil {
+	if shutdownErr := server.Shutdown(shutDownContext); shutdownErr != nil {
 		if CloseErr := server.Close(); CloseErr != nil {
 			return errors.Join(CloseErr, shutdownErr)
 		}
@@ -65,6 +66,5 @@ func shutdownServer(shutdownTimeOut time.Duration, server *http.Server) error {
 		return shutdownErr
 	}
 
-	fmt.Println("server gracefully closed")
 	return nil
 }

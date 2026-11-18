@@ -1,5 +1,7 @@
 package config
 
+import "github.com/RushilHKC/grpcSimulator/backend/Order/internal/env"
+
 type serverConfig struct {
 	Addr string
 }
@@ -11,6 +13,7 @@ type DbConfig struct {
 	DbName       string
 	MaxIdleConns int
 	MaxOpenConns int
+	DbTimeOut    int
 }
 
 func LoadServerConfig() *serverConfig {
@@ -19,13 +22,14 @@ func LoadServerConfig() *serverConfig {
 	return &serverConfig{Addr: addr}
 }
 
-func loadDbConfig() *DbConfig {
-	port := env.GetInt("port")
+func LoadDbConfig() *DbConfig {
+	port := env.GetString("port")
 	userName := env.GetString("userName")
 	password := env.GetString("password")
 	dbName := env.GetString("dbName")
-	maxIdleConns := env.getInt("maxIdleConns")
-	maxOpenConns := env.getInt("maxOpenConns")
+	maxIdleConns := env.GetInt("maxIdleConns")
+	maxOpenConns := env.GetInt("maxOpenConns")
+	dbTimeOut := env.GetInt("database_time_out")
 
 	return &DbConfig{
 		Port:         port,
@@ -34,5 +38,6 @@ func loadDbConfig() *DbConfig {
 		DbName:       dbName,
 		MaxIdleConns: maxIdleConns,
 		MaxOpenConns: maxOpenConns,
+		DbTimeOut:    dbTimeOut,
 	}
 }
