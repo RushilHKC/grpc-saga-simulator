@@ -7,6 +7,8 @@ import (
 
 	"github.com/RushilHKC/grpcSimulator/backend/Order/internal/config"
 	"github.com/RushilHKC/grpcSimulator/backend/Order/internal/env"
+	"github.com/RushilHKC/grpcSimulator/backend/Order/internal/repository"
+	"github.com/RushilHKC/grpcSimulator/backend/Order/internal/service"
 	shared "github.com/RushilHKC/grpcSimulator/backend/shared/shutdown"
 	database "github.com/RushilHKC/grpcSimulator/shared/gen/Db"
 	"github.com/joho/godotenv"

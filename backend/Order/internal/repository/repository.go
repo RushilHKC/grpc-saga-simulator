@@ -2,10 +2,15 @@ package repository
 
 import "database/sql"
 
-type orderRepository struct {
+type OrdesRepo interface{
+	
+}
+
+type OrderRepository struct {
 	db *sql.DB
 }
 
-func NewOrderRepository(db *sql.DB) *orderRepository {
-	return &orderRepository{db: db}
+func NewOrderRepository(db *sql.DB) *OrderRepository {
+	return &OrderRepository{db: db}
 }
+

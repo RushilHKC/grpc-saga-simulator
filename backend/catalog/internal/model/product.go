@@ -7,9 +7,3 @@ type Product struct {
 	Price       int    `json:"price"`
 	Currency    string `json:"currency"`
 }
-
-type OrderDetails struct {
-	ID       int
-	Price    int
-	Currency string
-}
